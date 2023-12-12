@@ -1,0 +1,4 @@
+<%= simple_form_for listing, data: { controller: "listing-form", listing_form_target: "form", action: "submit->listing-form#submit" } do |f| %>
+  <%= f.input :num_rooms %>
+  <%= f.submit %>
+<% end %>
