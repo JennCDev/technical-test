@@ -1,45 +1,43 @@
 class ListingsController < ApplicationController
+  before_action :set_listing, only: %i[ show update destroy ]
+
   def index
     @listings = Listing.all
-    render json: { listings: @listings.as_json(only: [:id, :num_rooms]) }
+    render json: @listings
   end
 
   def show
-    @listing = Listing.find(params[:id])
-    render json: { listing: @listing.as_json(only: [:id, :num_rooms]) }
-  end
-
-  def new
-    @listing = Listing.new
+    render json: @listing
   end
 
   def create
     @listing = Listing.new(listing_params)
     if @listing.save
-      render json: { listing: @listing.as_json(only: [:id, :num_rooms]), status: :created }
+      render json: @listing, status: :created, location: @listing
     else
-      render :new, status: :unprocessable_entity
+      render json: @listing.errors, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    @listing = Listing.find(params[:id])
   end
 
   def update
     @listing = Listing.find(params[:id])
 
     if @listing.update(listing_params)
-      redirect_to listing_path(@listing)
+      render json: @listing
     else
-      render :edit, status: :unprocessable_entity
+      render json: @listing.errors, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @listing = Listing.find(params[:id])
     @listing.destroy
     redirect_to listings_path, status: :see_other
+  end
+
+  private
+
+  def set_listing
+    @listing = Listing.find(params[:id])
   end
 
   def listing_params
